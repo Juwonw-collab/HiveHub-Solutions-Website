@@ -1,0 +1,37 @@
+{
+  "entities": {
+    "AppSettings": {
+      "title": "App Settings",
+      "description": "Global application settings including branding.",
+      "type": "object",
+      "properties": {
+        "logoUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "The URL of the company logo."
+        },
+        "mascotUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "The URL of the company mascot."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last time the settings were updated."
+        },
+        "updatedBy": {
+          "type": "string",
+          "description": "UID of the user who last updated the settings."
+        }
+      },
+      "required": ["logoUrl"]
+    }
+  },
+  "firestore": {
+    "/settings/global": {
+      "schema": "AppSettings",
+      "description": "Global settings for the application."
+    }
+  }
+}
