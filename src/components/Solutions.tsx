@@ -1,18 +1,20 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Sun, Building, Share2 as Hub, CheckCircle2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Sun, Building, Share2 as Hub, CheckCircle2, ArrowRight } from 'lucide-react';
 
 const solutions = [
   {
     id: 'residential',
-    title: 'Residential: Custom Solar Financial Strategies',
-    subtitle: 'For Homeowners seeking more than just a loan.',
-    description: 'We don’t just find a "low rate"; we design a custom financial strategy that treats solar as a long-term asset. By partnering with specialized lenders, we ensure homeowners get the right payment structure and tax-advantage alignment to maximize their home’s value.',
+    title: 'Residential Hub: Custom Solar Financial Strategies',
+    subtitle: 'For Homeowners seeking the best installers and more than just a loan.',
+    description: 'We don’t just find a "low rate"; we design a custom financial strategy and connect you with the top-rated solar installers in your area. By partnering with specialized lenders and vetted local professionals, we ensure homeowners get the right payment structure, tax-advantage alignment, and high-quality installation to maximize their home’s value.',
     icon: Sun,
     features: [
-      'Tailored Debt Structuring: Options that fit your specific cash flow goals.',
+      'Top-Tier Installer Network: We connect you with the best, fully-vetted solar installers in your specific area.',
+      'Flexible Financing Options: Access to zero-down loans, leases, and PPAs tailored to fit your specific cash flow goals.',
       'Incentive Optimization: Navigating federal and local credits to lower your net cost.',
-      'Long-Term Value Planning: Ensuring your system adds maximum equity to your property.',
+      'Long-Term Value Planning: Ensuring your system adds maximum equity to your property with the right equipment and financing.',
     ],
   },
   {
@@ -69,7 +71,7 @@ export default function Solutions() {
                 <p className="text-muted text-lg leading-relaxed mb-8">
                   {solution.description}
                 </p>
-                <div className="space-y-4">
+                <div className="space-y-4 mb-8">
                   {solution.features.map((feature) => (
                     <div key={feature} className="flex items-start gap-3">
                       <CheckCircle2 className={`w-6 h-6 shrink-0 mt-1 ${index < 2 ? 'text-energy' : 'text-accent'}`} />
@@ -77,6 +79,11 @@ export default function Solutions() {
                     </div>
                   ))}
                 </div>
+                {solution.id === 'residential' && (
+                  <Link to="/residential-hub" className="inline-flex items-center gap-2 text-accent hover:text-white font-medium transition-colors">
+                    Learn more about our Residential Hub <ArrowRight className="w-4 h-4" />
+                  </Link>
+                )}
               </div>
               <div className="flex-1 w-full">
                 <div className="aspect-video glass rounded-[2.5rem] overflow-hidden relative group">

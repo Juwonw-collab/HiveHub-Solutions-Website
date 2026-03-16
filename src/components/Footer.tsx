@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Hexagon, Github, Twitter, Linkedin } from 'lucide-react';
 import { useBranding } from '../BrandingContext';
 
@@ -32,12 +33,15 @@ export default function Footer() {
               <a href="#" className="text-muted hover:text-accent transition-colors"><Twitter className="w-6 h-6" /></a>
               <a href="#" className="text-muted hover:text-accent transition-colors"><Linkedin className="w-6 h-6" /></a>
             </div>
+            <div className="mt-6 text-sm text-muted">
+              <a href="https://hivehubsolutionsHQ.org" className="hover:text-accent transition-colors">www.hivehubsolutionsHQ.org</a>
+            </div>
           </div>
 
           <div>
             <h4 className="font-bold text-white mb-6 uppercase tracking-widest text-sm">Solutions</h4>
             <ul className="space-y-4 text-muted">
-              <li><a href="/#residential" className="hover:text-accent transition-colors">Residential</a></li>
+              <li><Link to="/residential-hub" className="hover:text-accent transition-colors">Residential</Link></li>
               <li><a href="/#commercial" className="hover:text-accent transition-colors">Commercial</a></li>
               <li><a href="/#capital-hub" className="hover:text-accent transition-colors">Capital Hub</a></li>
             </ul>

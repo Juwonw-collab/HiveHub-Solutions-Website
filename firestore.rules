@@ -12,6 +12,35 @@ service cloud.firestore {
     //   - updatedAt: timestamp (optional) - Last update time
     //   - updatedBy: string (optional) - UID of the updater
     //
+    // Collection: users/{userId}/contacts
+    // Document ID: auto-generated
+    // Fields:
+    //   - firstName: string (required)
+    //   - lastName: string (required)
+    //   - email: string (optional)
+    //   - phone: string (optional)
+    //   - status: string (required, enum: 'Lead', 'Qualification', 'Active', 'Closed', 'Solar Lead', 'Investor Lead', 'Developer Lead', 'Site Survey', 'Permitting', 'Installation', 'PTO', 'Completed')
+    //   - notes: string (optional)
+    //   - isHomeowner: boolean (optional)
+    //   - address: string (optional)
+    //   - appointmentTime: string (optional)
+    //   - appointmentOutcome: string (optional, enum: 'Pending', 'Showed', 'No Show', 'Rescheduled', 'Cancelled')
+    //   - presentedAndQualified: boolean (optional)
+    //   - homeownerQualified: boolean (optional)
+    //   - signedDocuments: boolean (optional)
+    //   - utilityBillUrl: string (optional)
+    //   - createdAt: timestamp (required)
+    //   - updatedAt: timestamp (required)
+    //
+    // Collection: users/{userId}/bankingInfo
+    // Document ID: default
+    // Fields:
+    //   - bankName: string (required)
+    //   - accountName: string (required)
+    //   - accountNumber: string (required)
+    //   - routingNumber: string (required)
+    //   - updatedAt: timestamp (required)
+    //
     // ===============================================================
 
     // ===============================================================
@@ -20,6 +49,10 @@ service cloud.firestore {
     
     function isAuthenticated() {
       return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
     }
 
     function isAdmin() {
@@ -41,6 +74,37 @@ service cloud.firestore {
              data.keys().hasOnly(['logoUrl', 'mascotUrl', 'updatedAt', 'updatedBy']);
     }
 
+    function isValidContact(data) {
+      return data.keys().hasAll(['firstName', 'lastName', 'status', 'createdAt', 'updatedAt']) &&
+             data.firstName is string && data.firstName.size() > 0 && data.firstName.size() < 100 &&
+             data.lastName is string && data.lastName.size() > 0 && data.lastName.size() < 100 &&
+             (!('email' in data) || (data.email is string && data.email.size() < 255)) &&
+             (!('phone' in data) || (data.phone is string && data.phone.size() < 50)) &&
+             data.status in ['Lead', 'Qualification', 'Active', 'Closed', 'Solar Lead', 'Investor Lead', 'Developer Lead', 'Site Survey', 'Permitting', 'Installation', 'PTO', 'Completed'] &&
+             (!('notes' in data) || (data.notes is string && data.notes.size() < 5000)) &&
+             (!('isHomeowner' in data) || data.isHomeowner is bool) &&
+             (!('address' in data) || (data.address is string && data.address.size() < 500)) &&
+             (!('appointmentTime' in data) || (data.appointmentTime is string && data.appointmentTime.size() < 100)) &&
+             (!('appointmentOutcome' in data) || data.appointmentOutcome in ['Pending', 'Showed', 'No Show', 'Rescheduled', 'Cancelled']) &&
+             (!('presentedAndQualified' in data) || data.presentedAndQualified is bool) &&
+             (!('homeownerQualified' in data) || data.homeownerQualified is bool) &&
+             (!('signedDocuments' in data) || data.signedDocuments is bool) &&
+             (!('utilityBillUrl' in data) || (data.utilityBillUrl is string && data.utilityBillUrl.size() < 1048576)) &&
+             data.createdAt is timestamp &&
+             data.updatedAt is timestamp &&
+             data.keys().hasOnly(['firstName', 'lastName', 'email', 'phone', 'status', 'notes', 'isHomeowner', 'address', 'appointmentTime', 'appointmentOutcome', 'presentedAndQualified', 'homeownerQualified', 'signedDocuments', 'utilityBillUrl', 'createdAt', 'updatedAt']);
+    }
+
+    function isValidBankingInfo(data) {
+      return data.keys().hasAll(['bankName', 'accountName', 'accountNumber', 'routingNumber', 'updatedAt']) &&
+             data.bankName is string && data.bankName.size() > 0 && data.bankName.size() < 100 &&
+             data.accountName is string && data.accountName.size() > 0 && data.accountName.size() < 100 &&
+             data.accountNumber is string && data.accountNumber.size() > 0 && data.accountNumber.size() < 50 &&
+             data.routingNumber is string && data.routingNumber.size() > 0 && data.routingNumber.size() < 50 &&
+             data.updatedAt is timestamp &&
+             data.keys().hasOnly(['bankName', 'accountName', 'accountNumber', 'routingNumber', 'updatedAt']);
+    }
+
     // ===============================================================
     // Rules
     // ===============================================================
@@ -48,6 +112,21 @@ service cloud.firestore {
     match /settings/global {
       allow read: if true; // Publicly readable for branding
       allow write: if isAdmin() && isValidSettings(request.resource.data);
+    }
+
+    match /users/{userId}/contacts/{contactId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidContact(request.resource.data);
+      allow update: if isOwner(userId) && isValidContact(request.resource.data) &&
+                    request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if isOwner(userId);
+    }
+
+    match /users/{userId}/bankingInfo/{docId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidBankingInfo(request.resource.data);
+      allow update: if isOwner(userId) && isValidBankingInfo(request.resource.data);
+      allow delete: if isOwner(userId);
     }
 
     // Default deny

@@ -26,12 +26,40 @@
         }
       },
       "required": ["logoUrl"]
+    },
+    "Contact": {
+      "title": "CRM Contact",
+      "description": "A contact or lead in the CRM system.",
+      "type": "object",
+      "properties": {
+        "firstName": { "type": "string" },
+        "lastName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "phone": { "type": "string" },
+        "status": { "type": "string", "enum": ["Lead", "Qualification", "Active", "Closed", "Solar Lead", "Investor Lead", "Developer Lead", "Site Survey", "Permitting", "Installation", "PTO", "Completed"] },
+        "notes": { "type": "string" },
+        "isHomeowner": { "type": "boolean" },
+        "address": { "type": "string" },
+        "appointmentTime": { "type": "string" },
+        "appointmentOutcome": { "type": "string", "enum": ["Pending", "Showed", "No Show", "Rescheduled", "Cancelled"] },
+        "presentedAndQualified": { "type": "boolean" },
+        "homeownerQualified": { "type": "boolean" },
+        "signedDocuments": { "type": "boolean" },
+        "utilityBillUrl": { "type": "string", "format": "uri" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["firstName", "lastName", "status", "createdAt", "updatedAt"]
     }
   },
   "firestore": {
     "/settings/global": {
       "schema": "AppSettings",
       "description": "Global settings for the application."
+    },
+    "/users/{userId}/contacts/{contactId}": {
+      "schema": "Contact",
+      "description": "Contacts belonging to a specific user."
     }
   }
 }

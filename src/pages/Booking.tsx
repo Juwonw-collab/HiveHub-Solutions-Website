@@ -1,12 +1,21 @@
 import React, { useState, useRef } from 'react';
 import { motion } from 'motion/react';
-import { Calendar, Clock, User, Mail, Phone, MessageSquare, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Calendar, Clock, User, Mail, Phone, MessageSquare, Loader2, CheckCircle2, AlertCircle, Upload, FileText } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 
 export default function Booking() {
   const formRef = useRef<HTMLFormElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [fileName, setFileName] = useState<string | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setFileName(e.target.files[0].name);
+    } else {
+      setFileName(null);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -178,6 +187,41 @@ export default function Booking() {
                     className="w-full bg-white/5 border border-white/10 rounded-lg py-3 pl-10 pr-4 text-white focus:outline-none focus:border-accent transition-colors resize-none"
                     placeholder="Tell us about your project or capital needs..."
                   ></textarea>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-muted mb-2">Upload Utility Bill (Optional)</label>
+                <p className="text-xs text-muted mb-3">Providing your utility bill helps us design a more accurate custom solar financial strategy.</p>
+                <div className="relative">
+                  <input 
+                    type="file" 
+                    name="utility_bill"
+                    id="utility_bill"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    className="hidden"
+                    onChange={handleFileChange}
+                  />
+                  <label 
+                    htmlFor="utility_bill"
+                    className="flex items-center justify-center w-full bg-white/5 border border-dashed border-white/20 hover:border-accent/50 rounded-lg py-6 px-4 cursor-pointer transition-colors group"
+                  >
+                    <div className="flex flex-col items-center gap-2 text-center">
+                      {fileName ? (
+                        <>
+                          <FileText className="w-8 h-8 text-accent mb-1" />
+                          <span className="text-sm font-medium text-white">{fileName}</span>
+                          <span className="text-xs text-muted group-hover:text-accent transition-colors">Click to change file</span>
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-8 h-8 text-muted group-hover:text-accent transition-colors mb-1" />
+                          <span className="text-sm font-medium text-white">Click to upload or drag and drop</span>
+                          <span className="text-xs text-muted">PDF, JPG, or PNG (max. 10MB)</span>
+                        </>
+                      )}
+                    </div>
+                  </label>
                 </div>
               </div>
 
